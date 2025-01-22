@@ -4,11 +4,12 @@
   "description": "NodeJS native module written in Rust and Typescript to interact with Pipewire",
   "main": "build/index.js",
   "scripts": {
-    "build": "tsc && cargo-cp-artifact -nc build/index.node -- cargo build --message-format=json-render-diagnostics",
+    "build": "tsc && npm run check-platform; [ $? -ne 0 ] || cargo-cp-artifact -nc build/index.node -- cargo build --message-format=json-render-diagnostics",
     "build-cross": "tsc && cross build --target $TARGET && cp target/$TARGET/release/libnode_pipewire.so build/index.node",
     "build-cross:release": "tsc && cross build --target $TARGET --release && cp target/$TARGET/release/libnode_pipewire.so build/index.node",
     "build-debug": "npm run build --",
     "build-release": "npm run build -- --release",
+    "check-platform": "[ $(uname) != 'Darwin' ] || (echo 'Platform not supported. Skipping build.'; exit 1)",
     "install": "node-pre-gyp install --fallback-to-build=false || npm run build-release",
     "test": "cargo test",
     "package": "node-pre-gyp package",
